@@ -1,5 +1,5 @@
 import {Routes} from '@angular/router';
-impoEnxd rt { MemberListComponent } from './member-list/member-list.component';
+import { MemberListComponent } from './member-list/member-list.component';
 import { MessagesComponent } from './messages/messages.component';
 import { ListsComponent } from './lists/lists.component';
 import { HomeComponent } from './home/home.component';
