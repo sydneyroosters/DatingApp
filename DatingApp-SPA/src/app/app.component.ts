@@ -10,11 +10,11 @@ import { AuthService } from './_services/Auth.service';
 export class AppComponent implements OnInit {
 
   jwtHelper = new JwtHelperService();
-  constructor (private authService : AuthService){}
+  constructor (private authService: AuthService) {}
 
-  ngOnInit(){
+  ngOnInit() {
     const token = localStorage.getItem('token');
-    if (token){
+    if (token) {
       this.authService.decodeToken = this.jwtHelper.decodeToken(token);
     }
   }

@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Dating.API.Dtos;
 using System.Collections.Generic;
+using System.Security.Claims;
+using System;
 
 namespace Dating.API.Controllers
 {
@@ -17,6 +19,8 @@ namespace Dating.API.Controllers
     {
         private readonly IDatingRepository _repo;
         private readonly IMapper _mapper;
+
+        public object ClaimsTypes { get; private set; }
 
         public UsersController(IDatingRepository repo, IMapper mapper)
         {
@@ -42,15 +46,31 @@ namespace Dating.API.Controllers
             return Ok(userToReturn);
         }
 
-        // POST api/values
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(int id, UserForUpdateDto userForUpdateDto){
+            
+            // Ensure HTTP ID matches user token value
+            if (id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }   
+            
+            // Save user to DB
+            var userFromRepo = await _repo.GetUser(id);
+            _mapper.Map(userForUpdateDto, userFromRepo);
+
+            if(await _repo.SaveAll())
+            {
+                return NoContent();
+            }
+
+            throw new Exception($"UpdateUser failed to save user with ID {id}");
+
         }
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        // POST api/values 
+        [HttpPost]
+        public void Post([FromBody] string value)
         {
         }
 
