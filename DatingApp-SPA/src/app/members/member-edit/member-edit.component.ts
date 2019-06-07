@@ -16,6 +16,7 @@ export class MemberEditComponent implements OnInit {
   @ViewChild('editForm') editForm: NgForm;
   user: User;
   photoUrl: string;
+  currentDate  = new Date();
 
   @HostListener('window:beforeunload', ['$event'])
   unloadNotification ($event: any) {
