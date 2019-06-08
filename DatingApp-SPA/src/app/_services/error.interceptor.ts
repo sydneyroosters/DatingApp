@@ -12,7 +12,6 @@ export class ErrorInterceptor implements HttpInterceptor {
                 if (error instanceof HttpErrorResponse) {
                     const applicatonError = error.headers.get('Application-Error');
                     if (applicatonError) {
-                        console.error(applicatonError);
                         return throwError (applicatonError);
                     }
                     const serverError = error.error.errors;
@@ -23,6 +22,10 @@ export class ErrorInterceptor implements HttpInterceptor {
                                 modalStateErrors += serverError[key] + '\n';
                             }
                         }
+                    }
+
+                    if (error.error != null && modalStateErrors != null) {
+                        modalStateErrors = error.error;
                     }
                     return throwError(modalStateErrors || serverError || 'Server Error');
                 }

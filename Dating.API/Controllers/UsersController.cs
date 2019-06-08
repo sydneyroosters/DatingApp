@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System;
 using Dating.API.Helpers;
+using Dating.API.Models;
 
 namespace Dating.API.Controllers
 { 
@@ -78,17 +79,33 @@ namespace Dating.API.Controllers
 
         }
 
-        // POST api/values 
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpPost("{id}/like/{recipientId}")]
+        public async Task<IActionResult> LikeUser(int id, int recipientId)
         {
+            // Ensure HTTP ID matches user token value
+            if (id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }   
+            var like = await _repo.GetLike(id,recipientId);
+            if(like != null) 
+            {
+                 return BadRequest("You already liked this user!");
+            }
+            if (await _repo.GetUser(recipientId) == null)
+            {
+                return NotFound();
+            }
+            like = new Like  {
+                LikerId = id,
+                LikeeId = recipientId
+            };
+            _repo.Add<Like>(like);
+            if(await _repo.SaveAll())
+            {
+                return Ok();
+            }
+            return BadRequest("Failed to add like to user");
         }
-
-         // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
-        
     }
 }
